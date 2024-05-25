@@ -91,6 +91,15 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (modalRef.current) {
+      if (isOpen) modalRef.current.style.display = "block";
+      else setTimeout(() => {
+        if(modalRef.current) modalRef.current.style.display = "none";
+      }, 500);
+    }
+  }, [isOpen])
+
   return (
     <div
       id="modal-root"

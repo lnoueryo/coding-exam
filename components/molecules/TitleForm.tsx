@@ -11,7 +11,9 @@ const TitleForm = ({ title, isOpen, changeTitle }: TitleFormProps) => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {inputRef.current && inputRef.current.focus()}, [isOpen]);
+  useEffect(() => {
+    setTimeout(() => inputRef.current && inputRef.current.focus(), 0);
+  }, [isOpen]);
 
   return (
     <div className="w100">
@@ -19,16 +21,24 @@ const TitleForm = ({ title, isOpen, changeTitle }: TitleFormProps) => {
         タイトル
       </label>
       <div>
-        <input css={inputStyle} className="w100" id="title" type="text" value={title} ref={inputRef} onChange={changeTitle} />
+        <input
+          css={inputStyle}
+          className="w100"
+          id="title"
+          type="text"
+          value={title}
+          ref={inputRef}
+          onChange={changeTitle}
+        />
       </div>
     </div>
-  )
+  );
 }
 
 const labelStyle = css({
   display: "inline-block",
   paddingBottom: "var(--size-s)"
-})
+});
 
 const inputStyle = css({
   height: "calc(var(--content-height) / 1.5)",
@@ -42,6 +52,6 @@ const inputStyle = css({
     border: "solid 2px blue",
     outline: "initial"
   }
-})
+});
 
-export default TitleForm
+export default TitleForm;
