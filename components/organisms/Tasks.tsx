@@ -1,6 +1,6 @@
-import { css } from '@emotion/react';
-import Task from '../molecules/Task'
-import Divider from '../atoms/Divider'
+import { css } from "@emotion/react";
+import Task from "../molecules/Task"
+import Divider from "../atoms/Divider"
 
 interface TasksProps {
   tasks: {id: number, title: string, completed: boolean}[],
@@ -33,7 +33,7 @@ const Tasks = ({ tasks, changeStatus, onClickEditTask, onClickDeleteTask }: Task
 }
 
 const ulStyle = css({
-  listStyle: 'none',
+  listStyle: "none",
   padding: 0,
 });
 

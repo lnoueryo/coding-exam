@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 import Tasks from "../organisms/Tasks";
 import TaskForm from "../organisms/TaskForm";
 import Button from "../atoms/Button";
@@ -122,16 +122,17 @@ const TaskManagement = () => {
 
   const createTask = () => {
     snackbarSettings.close();
-    setForm(Object.assign(form, {
+    setForm({
+      ...form,
       label: "作成",
       color: "blue",
       title: "",
       buttonText: "作成",
       onClick: async() => await taskUpdateWrapper(() => fetchWithTimeout(BASE_TODO_URL, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({ title: formRef.current.title }),
       }))
-    }))
+    })
     handleOpenModal()
   }
 
@@ -142,7 +143,7 @@ const TaskManagement = () => {
       const task = taskObj.find(task => task.id === id);
       if (!task) throw new Error(`${formRef.current.buttonText}できませんでした`);
       setForm({
-        ...form,
+        ...formRef.current,
         label: "編集",
         color: "orange",
         title: task.title,
@@ -227,7 +228,7 @@ const TaskManagement = () => {
         }
       </div>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <TaskFormWrapper label={formRef.current.label}>
+        <TaskFormWrapper label={form.label}>
           <TaskForm {...form} isOpen={isModalOpen} setForm={setForm} />
         </TaskFormWrapper>
       </Modal>

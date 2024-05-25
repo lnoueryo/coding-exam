@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { css } from '@emotion/react';
+import React, { useEffect, useRef, useState } from "react";
+import { css } from "@emotion/react";
 
 type ModalProps = {
   isOpen: boolean;
@@ -20,7 +20,7 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Tab' && modalRef.current) {
+      if (e.key === "Tab" && modalRef.current) {
         const focusableElements = modalRef.current.querySelectorAll(
           'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
         );
@@ -45,15 +45,15 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     }
   }, [isOpen]);
 
   useEffect(() => {
     const updateTabIndexes = (elements: NodeListOf<Element>, tabIndexValue: string) => {
       elements.forEach(element => {
-        (element as HTMLElement).setAttribute('tabindex', tabIndexValue);
+        (element as HTMLElement).setAttribute("tabindex", tabIndexValue);
       });
     };
 
@@ -63,12 +63,12 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
       );
 
       if (isOpen) {
-        updateTabIndexes(focusableElements, '0'); // フォーカスを有効にする
+        updateTabIndexes(focusableElements, "0"); // フォーカスを有効にする
         if (focusableElements.length > 0) {
           (focusableElements[0] as HTMLElement).focus();
         }
       } else {
-        updateTabIndexes(focusableElements, '-1'); // フォーカスを無効にする
+        updateTabIndexes(focusableElements, "-1"); // フォーカスを無効にする
       }
     }
 
@@ -78,15 +78,15 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
     if (isOpen) {
       focusableElementsOutsideModal.forEach(element => {
-        (element as HTMLElement).setAttribute('data-old-tabindex', (element as HTMLElement).getAttribute('tabindex') || '0');
-        (element as HTMLElement).setAttribute('tabindex', '-1');
+        (element as HTMLElement).setAttribute("data-old-tabindex", (element as HTMLElement).getAttribute("tabindex") || "0");
+        (element as HTMLElement).setAttribute("tabindex", "-1");
       });
     } else {
       focusableElementsOutsideModal.forEach(element => {
-        const oldTabIndex = (element as HTMLElement).getAttribute('data-old-tabindex');
-        if (oldTabIndex === '0') (element as HTMLElement).removeAttribute('tabindex');
-        else (element as HTMLElement).setAttribute('tabindex', oldTabIndex || '0');
-        (element as HTMLElement).removeAttribute('data-old-tabindex');
+        const oldTabIndex = (element as HTMLElement).getAttribute("data-old-tabindex");
+        if (oldTabIndex === "0") (element as HTMLElement).removeAttribute("tabindex");
+        else (element as HTMLElement).setAttribute("tabindex", oldTabIndex || "0");
+        (element as HTMLElement).removeAttribute("data-old-tabindex");
       });
     }
   }, [isOpen]);
@@ -111,26 +111,26 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 };
 
 const modalStyle = css({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  position: 'fixed',
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  position: "fixed",
   top: 0,
   left: 0,
-  width: '100%',
-  height: '100%',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  transition: 'all .5s',
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  transition: "all .5s",
   opacity: 0,
 });
 
 const modalContentStyle = css({
-  backgroundColor: '#2e2e2e',
-  padding: 'var(--size-l)',
-  borderRadius: '8px',
-  width: '100%',
-  maxWidth: 'calc(var(--content-height) * 10)',
-  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+  backgroundColor: "#2e2e2e",
+  padding: "var(--size-l)",
+  borderRadius: "8px",
+  width: "100%",
+  maxWidth: "calc(var(--content-height) * 10)",
+  boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
 });
 
 export default Modal;

@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
 
 interface ButtonProps {
@@ -26,7 +26,7 @@ const baseButton = {
 
 const baseButtonStyle = css({
   ...baseButton,
-  userSelect: 'none',
+  userSelect: "none",
 });
 
 const buttonStyle = css({
@@ -41,7 +41,7 @@ const buttonStyle = css({
     transition: "all .2s"
   },
   ...baseButton,
-  userSelect: 'none',
+  userSelect: "none",
 })
 
 export default Button;

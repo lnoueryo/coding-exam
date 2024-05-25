@@ -1,5 +1,5 @@
-import React, { useEffect, useRef  } from 'react';
-import { css } from '@emotion/react';
+import React, { useEffect, useRef  } from "react";
+import { css } from "@emotion/react";
 
 type SnackbarProps = {
   isOpen: boolean;
@@ -25,7 +25,7 @@ const Snackbar = ({ isOpen, close, color, time, children }: SnackbarProps) => {
     };
   }, [isOpen]);
   return (
-    <div css={snackbarStyle} style={{backgroundColor: color || "transparent", bottom: isOpen ? "16px" : "-50%"}} aria-live={isOpen ? 'polite' : undefined}>
+    <div css={snackbarStyle} style={{backgroundColor: color || "transparent", bottom: isOpen ? "16px" : "-50%"}} aria-live={isOpen ? "polite" : undefined}>
       <div css={contentStyle}>
         {children}
       </div>

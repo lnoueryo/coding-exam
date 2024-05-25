@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 import Head from "next/head";
 import Header from "../../components/organisms/Header";
 import Main from "../../components/organisms/Main";

@@ -1,5 +1,6 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 import Button from "../atoms/Button";
+import KebabMenu from "../atoms/KebabMenu";
 
 interface TaskProps {
   id: number,
@@ -11,23 +12,35 @@ interface TaskProps {
 }
 
 const Task = ({ id, title, completed, changeStatus, onClickEditTask, onClickDeleteTask }: TaskProps) => {
+  const buttons = [
+    {text: "編集", color: "orange", onClick: onClickEditTask},
+    {text: "削除", color: "red", onClick: onClickDeleteTask},
+  ]
   return (
     <div className="centering content-list" aria-labelledby={`task-title`} aria-describedby={`task-status`}>
       <div className="centering-row" css={taskContainer}>
         <label className="centering-row" css={labelStyle} htmlFor={String(id)}>
           <input className="mr-16" type="checkbox" id={String(id)} value={id} checked={Boolean(completed)} css={checkboxStyle} onChange={(e) => changeStatus(e)} onKeyUp={(e) => e.key === "Enter" && changeStatus(e)} />
-          <p className="mr-16">
+          <p className="mr-16 centering-row">
             <span className="mr-16">{id}</span>
             <span>{title}</span>
           </p>
         </label>
       </div>
       <div className="centering-row" css={buttonContainer}>
-        <div className="mr-8">
-          <Button color="orange" onClick={onClickEditTask}>編集</Button>
+        <div css={kebabMenuStyle}>
+          <KebabMenu options={buttons} />
         </div>
-        <div>
-          <Button color="red" onClick={onClickDeleteTask}>削除</Button>
+        <div css={buttonGroupStyle}>
+          {
+            buttons.map((button, index) => {
+              return (
+                <div className={index === 0 ? "mr-8" : undefined} key={button.text}>
+                  <Button {...button}>{button.text}</Button>
+                </div>
+              );
+            })
+          }
         </div>
       </div>
     </div>
@@ -36,21 +49,41 @@ const Task = ({ id, title, completed, changeStatus, onClickEditTask, onClickDele
 
 const taskContainer = css({
   width: "80%",
+  "@media (max-width: 768px)": {
+    width: "90%",
+  },
 })
 
 const buttonContainer = css({
   width: "20%",
-  justifyContent: "end"
+  justifyContent: "end",
+  "@media (max-width: 768px)": {
+    width: "10%",
+  },
 })
 
 const checkboxStyle = css({
-  width: "var(--size-l)",
-  height: "var(--size-l)",
+  minWidth: "var(--size-l)",
+  minHeight: "var(--size-l)",
   cursor: "pointer"
 })
 
 const labelStyle = css({
   cursor: "pointer"
 })
+
+const kebabMenuStyle = css({
+  display: "none",
+  "@media (max-width: 768px)": {
+    display: "block",
+  },
+});
+
+const buttonGroupStyle = css({
+  display: "flex",
+  "@media (max-width: 768px)": {
+    display: "none",
+  },
+});
 
 export default Task;

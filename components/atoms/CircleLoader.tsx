@@ -1,5 +1,5 @@
-import React from 'react';
-import { css, keyframes } from '@emotion/react';
+import React from "react";
+import { css, keyframes } from "@emotion/react";
 
 interface CircleLoaderProps {
   size?: number;
@@ -25,7 +25,7 @@ const loaderStyle = (size: number, color: string) => css`
   animation: ${rotate} 1s linear infinite;
 `;
 
-const CircleLoader: React.FC<CircleLoaderProps> = ({ size = 50, color = '#00f' }) => {
+const CircleLoader: React.FC<CircleLoaderProps> = ({ size = 50, color = "#00f" }) => {
   return <div css={loaderStyle(size, color)} />;
 };
 

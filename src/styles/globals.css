@@ -125,7 +125,7 @@ button {
 
 .content-list {
   padding: 0 var(--size-l);
-  height: var(--content-height);
+  min-height: var(--content-height);
 }
 
 .w100 {
