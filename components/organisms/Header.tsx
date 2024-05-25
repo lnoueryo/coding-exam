@@ -18,9 +18,9 @@ const headerStyle = css({
   alignItems: "center",
 })
 
-const title = {
+const title = css({
   fontSize: "var(--font-title)",
   lineHeight: "var(--font-title)"
-}
+})
 
 export default Header

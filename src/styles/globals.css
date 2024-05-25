@@ -42,6 +42,11 @@
   --frame-height: calc(var(--content-height) * 2);
   --font-title: 24px;
   --font-subtitle: 20px;
+  --font-sectiontitle: 18px;
+  --size-xs: 4px;
+  --size-s: 8px;
+  --size-m: 12px;
+  --size-l: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -104,8 +109,52 @@ a {
   text-decoration: none;
 }
 
+button {
+  border: initial;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
+}
+
+.content-container {
+  margin-bottom: var(--content-height)
+}
+
+.content-list {
+  padding: 0 var(--size-l);
+  height: var(--content-height);
+}
+
+.w100 {
+  width: 100%;
+}
+
+.mr-8 {
+  margin-right: var(--size-s);
+}
+
+.mr-16 {
+  margin-right: var(--size-l);
+}
+
+.mb-8 {
+  margin-bottom: var(--size-s);
+}
+
+.mb-16 {
+  margin-bottom: var(--size-s);
+}
+
+.centering {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.centering-row {
+  display: flex;
+  align-items: center;
 }
