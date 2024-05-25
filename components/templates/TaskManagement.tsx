@@ -148,7 +148,18 @@ const TaskManagement = () => {
         color: "orange",
         title: task.title,
         buttonText: "更新",
-        onClick: async() => await taskUpdateWrapper(() => fetchWithTimeout(BASE_TODO_URL + String(id), {method: "PUT", body: JSON.stringify({title: formRef.current.title})}))
+        onClick: async() => {
+          if (formRef.current.title === form.title) {
+            setSnackbarSettings({ ...snackbarSettings, isOpen: true, color: formRef.current.color, message: `${formRef.current.buttonText}しました` });
+            handleCloseModal();
+            setForm({...formRef.current, onClick: () => {}});
+            return;
+          };
+          await taskUpdateWrapper(() => fetchWithTimeout(BASE_TODO_URL + String(id), {
+            method: "PUT",
+            body: JSON.stringify({title: formRef.current.title})
+          }))
+        }
       })
       handleOpenModal();
     }
