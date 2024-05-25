@@ -2,10 +2,11 @@ import { css } from '@emotion/react';
 import Tasks from "../organisms/Tasks";
 import TaskForm from "../organisms/TaskForm";
 import Button from "../atoms/Button";
+import CircleLoader from "../atoms/CircleLoader";
 import Modal from "../wrappers/Modal";
 import Snackbar from "../wrappers/Snackbar";
 import TaskFormWrapper from "../wrappers/TaskFormWrapper";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 export interface Form {
   label: string;
@@ -16,25 +17,28 @@ export interface Form {
   onClickCancel: () => void;
 }
 
+interface Task {
+  id: number,
+  title: string,
+  completed: boolean
+}
+
+const BASE_TODO_URL = "/api/todos/"
+
 const TaskManagement = () => {
 
-  const [taskObj, setTaskObj] = useState([
-    { id: 1, title: 'testtesttesteテスト', completed: true },
-    { id: 2, title: 'Task 2', completed: false },
-    { id: 3, title: 'Task 3', completed: true },
-    { id: 4, title: 'Task 1', completed: true },
-    { id: 5, title: 'Task 2', completed: false },
-    { id: 6, title: 'Task 3', completed: true },
-    { id: 7, title: 'Task 1', completed: true },
-    { id: 8, title: 'Task 2', completed: false },
-    { id: 9, title: 'Task 3', completed: true },
-  ]);
-
-  const [taskIndex, setTaskIndex] = useState(10)
+  const [taskObj, setTaskObj] = useState([] as Task[]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [loading, setProgress] = useState(false);
+
+  const [snackbarSettings, setSnackbarSettings] = useState({
+    isOpen: false,
+    color: "",
+    message: "",
+    close: () => setSnackbarSettings({ ...snackbarSettings, isOpen: false})
+  });
 
   const tasks = [
     {label: "未完のタスク", tasks: taskObj.filter(task => !task.completed)},
@@ -55,79 +59,113 @@ const TaskManagement = () => {
   const formRef = useRef(form);
 
   useEffect(() => {
+    fetchTasks();
+  }, []);
+  useEffect(() => {
     formRef.current = form;
   }, [form]);
 
-  const changeStatus = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const displayTaskTemplate = () => {
+    return (
+      tasks.map((task, index) => {
+        return (
+          task.label !== "完了のタスク" || task.tasks.length !== 0
+          ? <div className="content-container" key={index}>
+              <TaskFormWrapper label={task.label}>
+                <Tasks {...task} changeStatus={changeStatus} onClickEditTask={onClickEditTask} onClickDeleteTask={onClickDeleteTask} />
+              </TaskFormWrapper>
+            </div>
+          : <React.Fragment key={index}></React.Fragment>
+        )
+      })
+    )
+  }
 
-    const id = Number(e.target.value);
-    const newTaskObj = taskObj.map(task => {
-      if (task.id === id) task.completed = !task.completed;
-      return task;
-    })
-    setTaskObj(newTaskObj)
+  const fetchTasks = async() => {
+    try {
+      const res = await fetchWithTimeout(BASE_TODO_URL);
+      if (!res.ok) {
+        throw new Error("取得できませんでした");
+      }
+      const data = await res.json();
+      setTaskObj(data);
+    } catch (error: any) {
+      console.error(error.message)
+      setSnackbarSettings({ ...snackbarSettings, isOpen: true, color: "red", message: error.message })
+    }
+  }
+
+  const changeStatus = async(e: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLDivElement>) => {
+
+    try {
+      setProgress(true)
+      let id: number;
+      if ("value" in e.target) id = Number(e.target.value);
+      else id = Number(e.currentTarget.getAttribute("value"));
+
+      const task = taskObj.find(task => task.id === id);
+      if (!task) throw new Error("更新できませんでした");
+      const res = await fetchWithTimeout(BASE_TODO_URL + String(id), {method: "PUT", body: JSON.stringify({...task, completed: !task.completed})});
+      if (!res.ok) {
+        throw new Error("更新できませんでした");
+      }
+      await fetchTasks();
+      setSnackbarSettings({ ...snackbarSettings, isOpen: true, color: "orange", message: "更新しました" })
+    } catch (error: any) {
+      console.error(error.message)
+      setSnackbarSettings({ ...snackbarSettings, isOpen: true, color: "red", message: error.message })
+    } finally {
+      setProgress(false)
+    }
+
   }
 
   const createTask = () => {
-    handleCloseSnackbar();
+    snackbarSettings.close();
     setForm(Object.assign(form, {
       label: "作成",
       color: "blue",
       title: "",
       buttonText: "作成",
-      onClick: () => {
-        setTaskObj([...taskObj, { id: taskIndex, title: formRef.current.title, completed: false }]);
-        setTaskIndex(taskIndex + 1);
-        handleCloseModal();
-        handleOpenSnackbar();
-      }
+      onClick: async() => await taskUpdateWrapper(() => fetchWithTimeout(BASE_TODO_URL, {
+        method: 'POST',
+        body: JSON.stringify({ title: formRef.current.title }),
+      }))
     }))
     handleOpenModal()
   }
 
   const onClickEditTask = (id: number) => {
+
     return () => {
-      handleCloseSnackbar()
+      snackbarSettings.close();
       const task = taskObj.find(task => task.id === id);
-      if (!task) return;
-      setForm(Object.assign(form, {
+      if (!task) throw new Error(`${formRef.current.buttonText}できませんでした`);
+      setForm({
+        ...form,
         label: "編集",
         color: "orange",
         title: task.title,
         buttonText: "更新",
-        onClick: () => {
-          const newTaskObj = taskObj.map(t => {
-            if (t.id === id) return { ...t, title: formRef.current.title };
-            return t;
-          });
-          setTaskObj(newTaskObj);
-          handleCloseModal();
-          handleOpenSnackbar();
-        }
-      }))
+        onClick: async() => await taskUpdateWrapper(() => fetchWithTimeout(BASE_TODO_URL + String(id), {method: "PUT", body: JSON.stringify({title: formRef.current.title})}))
+      })
       handleOpenModal();
     }
   }
 
   const onClickDeleteTask = (id: number) => {
     return () => {
-      handleCloseSnackbar()
+      snackbarSettings.close();
       const task = taskObj.find(task => task.id === id);
       if (!task) return;
-      setForm(Object.assign(form, {
+      setForm({
+        ...form,
         label: "削除",
         color: "red",
         title: task.title,
         buttonText: "削除",
-        onClick: () => {
-          const newTaskObj = taskObj.filter(task => {
-            return task.id !== id;
-          })
-          setTaskObj(newTaskObj);
-          handleCloseModal();
-          handleOpenSnackbar();
-        }
-      }))
+        onClick: async() => await taskUpdateWrapper(() => fetchWithTimeout(BASE_TODO_URL + String(id), {method: "DELETE"}))
+      })
       handleOpenModal();
     }
   }
@@ -140,12 +178,41 @@ const TaskManagement = () => {
     setIsModalOpen(false);
   };
 
-  const handleOpenSnackbar = () => {
-    setIsSnackbarOpen(true);
-  };
+  const taskUpdateWrapper = async(func: () => Promise<Response>) => {
+    try {
+      setProgress(true);
+      if (!navigator.onLine) throw new Error("現在オフラインです");
+      const res = await func();
+      if (!res.ok) {
+        throw new Error(`${formRef.current.buttonText}できませんでした`);
+      }
+      await fetchTasks();
+      setSnackbarSettings({ ...snackbarSettings, isOpen: true, color: formRef.current.color, message: `${formRef.current.buttonText}しました` });
+      handleCloseModal();
+      setForm({...formRef.current, onClick: () => {}});
+    } catch (error: any) {
+      console.error(error.message)
+      setSnackbarSettings({ ...snackbarSettings, isOpen: true, color: "red", message: error.message });
+    } finally {
+      setProgress(false);
+    }
+  }
 
-  const handleCloseSnackbar = () => {
-    setIsSnackbarOpen(false);
+  const fetchWithTimeout = async (url: string, options = {}, timeout = 5000) => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      return await fetch(url, { ...options, headers: {"Content-Type": "application/json"}, signal });
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        throw new Error("通信状態が悪いようです");
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   };
 
   return (
@@ -156,25 +223,23 @@ const TaskManagement = () => {
       </div>
       <div>
         {
-          tasks.map(task => {
-            return (
-              <div className="content-container" key={task.label}>
-                <TaskFormWrapper label={task.label}>
-                  <Tasks {...task} changeStatus={changeStatus} onClickEditTask={onClickEditTask} onClickDeleteTask={onClickDeleteTask} />
-                </TaskFormWrapper>
-              </div>
-            )
-          })
+          displayTaskTemplate()
         }
       </div>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <TaskFormWrapper label={form.label}>
+        <TaskFormWrapper label={formRef.current.label}>
           <TaskForm {...form} isOpen={isModalOpen} setForm={setForm} />
         </TaskFormWrapper>
       </Modal>
-      <Snackbar isOpen={isSnackbarOpen} onClose={handleCloseSnackbar} color={form.color}>
-        {form.buttonText}しました
+      <Snackbar { ...snackbarSettings}>
+        {snackbarSettings.message}
       </Snackbar>
+      {
+        loading &&
+        <div css={loaderContainer}>
+          <CircleLoader size={48} color="#00f" />
+        </div>
+      }
     </>
   );
 }
@@ -182,6 +247,19 @@ const TaskManagement = () => {
 const taskContentHeader = css({
   justifyContent: "space-between",
   height: "var(--content-height)"
+})
+
+const loaderContainer = css({
+  position: "fixed",
+  width: "100%",
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 10
 })
 
 export default TaskManagement;

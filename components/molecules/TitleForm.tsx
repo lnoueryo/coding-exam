@@ -27,7 +27,6 @@ const TitleForm = ({ title, isOpen, changeTitle }: TitleFormProps) => {
 
 const labelStyle = css({
   display: "inline-block",
-  cursor: "pointer",
   paddingBottom: "var(--size-s)"
 })
 
@@ -35,7 +34,6 @@ const inputStyle = css({
   height: "calc(var(--content-height) / 1.5)",
   fontSize: "14px",
   padding: "4px",
-  cursor: "pointer",
   backgroundColor: "#3b3b3b",
   border: "solid 2px #858585",
   borderRadius: "3px",

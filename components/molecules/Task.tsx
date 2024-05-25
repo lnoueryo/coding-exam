@@ -5,7 +5,7 @@ interface TaskProps {
   id: number,
   title: string,
   completed: boolean,
-  changeStatus: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  changeStatus: (e: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLDivElement>) => void,
   onClickEditTask: () => void,
   onClickDeleteTask: () => void
 }
@@ -15,7 +15,7 @@ const Task = ({ id, title, completed, changeStatus, onClickEditTask, onClickDele
     <div className="centering content-list" aria-labelledby={`task-title`} aria-describedby={`task-status`}>
       <div className="centering-row" css={taskContainer}>
         <label className="centering-row" css={labelStyle} htmlFor={String(id)}>
-          <input className="mr-16" type="checkbox" id={String(id)} value={id} checked={Boolean(completed)} css={checkboxStyle} onChange={(e) => changeStatus(e)} />
+          <input className="mr-16" type="checkbox" id={String(id)} value={id} checked={Boolean(completed)} css={checkboxStyle} onChange={(e) => changeStatus(e)} onKeyUp={(e) => e.key === "Enter" && changeStatus(e)} />
           <p className="mr-16">
             <span className="mr-16">{id}</span>
             <span>{title}</span>

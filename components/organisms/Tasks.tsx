@@ -4,7 +4,7 @@ import Divider from '../atoms/Divider'
 
 interface TasksProps {
   tasks: {id: number, title: string, completed: boolean}[],
-  changeStatus: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  changeStatus: (e: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLDivElement>) => void,
   onClickEditTask: (id: number) => () => void,
   onClickDeleteTask: (id: number) => () => void
 }
@@ -26,7 +26,7 @@ const Tasks = ({ tasks, changeStatus, onClickEditTask, onClickDeleteTask }: Task
         ? <ul css={ulStyle}>
             {displayTasks}
           </ul>
-        : <p className="centering" css={noTaskStyle}>現在タスクはありません</p>
+        : <p className="centering" css={noTaskStyle}>タスクなし</p>
       }
     </>
   )

@@ -33,15 +33,15 @@ const TaskForm = ({ label, color, id, title, buttonText, isOpen, onClick, onClic
         {
           label !== "削除"
           ? <TitleForm title={title} isOpen={isOpen} changeTitle={changeTitle} />
-          : <p>"<span style={{fontWeight: "bold"}}>{title}</span>" を削除します。よろしいですか。</p>
+          : <p>"<span css={titleFont}>{title}</span>" を削除します。よろしいですか。</p>
         }
       </div>
       <div className="centering-row content-list mb-16" css={buttonContainer}>
         <div className="mr-8">
-          <Button color="gray" onClick={onClickCancel}>キャンセル</Button>
+          <Button color="gray" type="button" onClick={onClickCancel}>キャンセル</Button>
         </div>
         <div>
-          <Button color={color} onClick={onClick} disabled={!title}>{buttonText}</Button>
+          <Button type="submit" color={color} onClick={onClick} disabled={!title}>{buttonText}</Button>
         </div>
       </div>
     </>
@@ -59,25 +59,8 @@ const formContent = css({
   padding: "0 var(--size-l)"
 })
 
-const labelStyle = css({
-  display: "inline-block",
-  cursor: "pointer",
-  paddingBottom: "var(--size-s)"
-})
-
-const inputStyle = css({
-  height: "calc(var(--content-height) / 1.5)",
-  fontSize: "14px",
-  padding: "4px",
-  cursor: "pointer",
-  backgroundColor: "#3b3b3b",
-  border: "solid 2px #858585",
-  borderRadius: "3px",
-  transition: "all .5s",
-  "&:focus": {
-    border: "solid 2px blue",
-    outline: "initial"
-  }
+const titleFont = css({
+  fontWeight: "bold"
 })
 
 export default TaskForm

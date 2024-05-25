@@ -3,19 +3,19 @@ import { css } from '@emotion/react';
 
 type SnackbarProps = {
   isOpen: boolean;
-  onClose: () => void;
+  close: () => void;
   color: string;
   time?: number;
   children: React.ReactNode;
 };
 
-const Snackbar = ({ isOpen, onClose, color, time, children }: SnackbarProps) => {
+const Snackbar = ({ isOpen, close, color, time, children }: SnackbarProps) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(onClose, time || 5000);
+      timerRef.current = setTimeout(close, time || 5000);
     }
 
     return () => {
@@ -25,7 +25,7 @@ const Snackbar = ({ isOpen, onClose, color, time, children }: SnackbarProps) => 
     };
   }, [isOpen]);
   return (
-    <div css={snackbarStyle} style={{backgroundColor: color, bottom: isOpen ? "16px" : "-50%"}}>
+    <div css={snackbarStyle} style={{backgroundColor: color || "transparent", bottom: isOpen ? "16px" : "-50%"}}>
       <div css={contentStyle}>
         {children}
       </div>
@@ -40,7 +40,9 @@ const snackbarStyle = css({
   minWidth: "192px",
   textAlign: "center",
   borderRadius: "3px",
-  transition: "all .5s"
+  transition: "all .5s",
+  userSelect: "none",
+  zIndex: 10
 })
 
 const contentStyle = css({

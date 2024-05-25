@@ -5,13 +5,14 @@ interface ButtonProps {
   children: React.ReactNode;
   color: string;
   disabled?: boolean;
+  type?: "button" | "reset" | "submit";
   onClick: () => void;
 }
 
-const Button = ({ children, color, disabled, onClick }: ButtonProps) => {
+const Button = ({ children, color, disabled, type, onClick }: ButtonProps) => {
   const disabledColor = "#111111";
   return (
-    <button css={disabled ? baseButtonStyle : buttonStyle} style={{ backgroundColor: disabled ? disabledColor : color }} onClick={() => onClick()} disabled={disabled}>
+    <button type={type || "button"} css={disabled ? baseButtonStyle : buttonStyle} style={{ backgroundColor: disabled ? disabledColor : color }} onClick={() => onClick()} disabled={disabled}>
       {children}
     </button>
   );
@@ -23,7 +24,10 @@ const baseButton = {
   minWidth: "60px",
 }
 
-const baseButtonStyle = css(baseButton)
+const baseButtonStyle = css({
+  ...baseButton,
+  userSelect: 'none',
+});
 
 const buttonStyle = css({
   transition: "all .5s",
@@ -37,6 +41,7 @@ const buttonStyle = css({
     transition: "all .2s"
   },
   ...baseButton,
+  userSelect: 'none',
 })
 
 export default Button;

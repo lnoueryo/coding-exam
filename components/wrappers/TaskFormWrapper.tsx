@@ -1,10 +1,19 @@
 import React from 'react';
 import { css } from '@emotion/react';
 
-const TaskFormWrapper= ({ children, label }: { children: React.ReactNode, label: string }) => {
+interface TaskFormWrapperProps {
+  children: React.ReactNode,
+  label: string,
+  onEnter?: () => void
+}
 
+const TaskFormWrapper= ({ children, label, onEnter }: TaskFormWrapperProps) => {
+  const sendForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // onEnter && onEnter();
+  }
   return (
-    <form onSubmit={(e)=>{e.preventDefault()}}>
+    <form onSubmit={(e) => e.preventDefault()}>
       <fieldset>
         <legend css={legendStyle}>
           <h3>{label}</h3>
