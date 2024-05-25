@@ -12,7 +12,7 @@ interface ButtonProps {
 const Button = ({ children, color, disabled, type, onClick }: ButtonProps) => {
   const disabledColor = "#111111";
   return (
-    <button type={type || "button"} css={disabled ? baseButtonStyle : buttonStyle} style={{ backgroundColor: disabled ? disabledColor : color }} onClick={() => onClick()} disabled={disabled}>
+    <button type={type || "button"} css={disabled ? baseButtonStyle : buttonStyle} style={{ backgroundColor: disabled ? disabledColor : color }} onClick={() => onClick()} disabled={disabled} aria-label={(children as string)}>
       {children}
     </button>
   );

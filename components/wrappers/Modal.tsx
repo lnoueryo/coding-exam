@@ -51,37 +51,43 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   }, [isOpen]);
 
   useEffect(() => {
+    const updateTabIndexes = (elements: NodeListOf<Element>, tabIndexValue: string) => {
+      elements.forEach(element => {
+        (element as HTMLElement).setAttribute('tabindex', tabIndexValue);
+      });
+    };
+
+    if (modalRef.current) {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      );
+
+      if (isOpen) {
+        updateTabIndexes(focusableElements, '0'); // フォーカスを有効にする
+        if (focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus();
+        }
+      } else {
+        updateTabIndexes(focusableElements, '-1'); // フォーカスを無効にする
+      }
+    }
+
+    const focusableElementsOutsideModal = Array.from(
+      document.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])')
+    ).filter(el => !modalRef.current?.contains(el));
+
     if (isOpen) {
-      const previousActiveElement = document.activeElement as HTMLElement;
-
-      const focusableElementsOutsideModal = Array.from(
-        document.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])')
-      ).filter(el => !modalRef.current?.contains(el));
-
       focusableElementsOutsideModal.forEach(element => {
         (element as HTMLElement).setAttribute('data-old-tabindex', (element as HTMLElement).getAttribute('tabindex') || '0');
         (element as HTMLElement).setAttribute('tabindex', '-1');
       });
-
-      if (modalRef.current) {
-        const focusableElements = modalRef.current.querySelectorAll(
-          'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusableElements.length > 0) {
-          (focusableElements[0] as HTMLElement).focus();
-        }
-      }
-
-      return () => {
-        focusableElementsOutsideModal.forEach(element => {
-          const oldTabIndex = (element as HTMLElement).getAttribute('data-old-tabindex');
-          if (oldTabIndex === '0') (element as HTMLElement).removeAttribute('tabindex');
-          else (element as HTMLElement).setAttribute('tabindex', oldTabIndex || '0');
-          (element as HTMLElement).removeAttribute('data-old-tabindex');
-        });
-
-        previousActiveElement?.focus();
-      };
+    } else {
+      focusableElementsOutsideModal.forEach(element => {
+        const oldTabIndex = (element as HTMLElement).getAttribute('data-old-tabindex');
+        if (oldTabIndex === '0') (element as HTMLElement).removeAttribute('tabindex');
+        else (element as HTMLElement).setAttribute('tabindex', oldTabIndex || '0');
+        (element as HTMLElement).removeAttribute('data-old-tabindex');
+      });
     }
   }, [isOpen]);
 

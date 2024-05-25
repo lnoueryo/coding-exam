@@ -7,11 +7,7 @@ interface TaskFormWrapperProps {
   onEnter?: () => void
 }
 
-const TaskFormWrapper= ({ children, label, onEnter }: TaskFormWrapperProps) => {
-  const sendForm = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // onEnter && onEnter();
-  }
+const TaskFormWrapper= ({ children, label }: TaskFormWrapperProps) => {
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <fieldset>
